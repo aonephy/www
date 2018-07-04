@@ -32,7 +32,7 @@
 			#play-control .pauseBtn{background-position:0px 0px}
 			#play-control .pauseBtn:hover{background-position:-30px 0px}
 			#nextBtn{left:120px;background-position:-2px -60px}
-			#nextBtn:hover{left:90px;background-position:-30px -60px}
+			#nextBtn:hover{background-position:-32px -60px}
 			#ex1Slider .slider-track {background: #BABABA;}
 			#volume .slider-track {background: #BABABA;}
 			.slider-handle{background:#fff;width:15px;height:15px;margin-top;-4px;}
@@ -89,7 +89,7 @@
 						<tr>
 							<td>歌曲</td>
 							<td width='80'>演唱者</td>
-							<td width='60'></td>
+							<td width='40'></td>
 						</tr>
 					</thead>
 					<tbody id='tbody'>
@@ -104,7 +104,7 @@
 							<td width='80'>
 								<span>{{rs.author}}</span>
 							</td>
-							<td width='60'>
+							<td width='40'>
 								<div class='dropdown'>
 									<span class='glyphicon glyphicon-chevron-down'  data-toggle='dropdown'></span>
 									<ul class='dropdown-menu fright' role='menu' aria-labelledby='myTabDrop1'>
@@ -258,7 +258,7 @@
 									vm.libraryList.push(res.data.data)
 									vm.libraryName = null;
 						    	}else{
-							    	
+							    	alert(res.data.msg)
 						    	}	
 							  })
 							  .catch(function (error) {
@@ -311,15 +311,15 @@
 						return FormatTime(value);					
 					}
 				});
-				
-					
+				//上一曲
 				$("#prevBtn").click(function(){
 					if(index==0)
-						index = list.length; 
+						index = vm.list.length; 
 					playMusic(--index);
 				})
+				//下一曲
 				$("#nextBtn").click(function(){
-					if(index==(list.length-1))
+					if(index==(vm.list.length-1))
 						index = -1;
 					playMusic(++index);
 				})	
@@ -349,7 +349,7 @@
 				//	console.log(res.value)
 					audio.removeEventListener('timeupdate',listen)
 				})
-			//	getMusic();
+				
 				// 监听播放时间
 				audio.addEventListener("timeupdate",function(){
 					$("#timeLineStart").html(FormatTime(audio.currentTime));
@@ -360,10 +360,10 @@
 	
 			//设置播放时间
 			function listen(){
-					if(audio.duration){
-						var n = parseInt(audio.currentTime.toFixed(0));
-						mySlider.slider('setValue',n)
-					}
+				if(audio.duration){
+					var n = parseInt(audio.currentTime.toFixed(0));
+					mySlider.slider('setValue',n)
+				}
 			}
 			
 			function FormatTime(time){
@@ -376,7 +376,7 @@
 			}
 		
 			function playMusic(id){
-
+			//	console.log(id)
 				index = id;
 
 				data = vm.list[id];
@@ -391,7 +391,6 @@
 			
 			var playFlag = 1;
 			$("#playBtn").click(function(){
-
 				if(playFlag == 1){
 					audio.pause()
 					$("#playBtn").addClass('pauseBtn')
@@ -401,18 +400,21 @@
 					$("#playBtn").removeClass('pauseBtn')
 					playFlag = 1;
 				}
-			//	console.log(audio.duration)
-			//	console.log(audio.currentTime)
 			})
 			
-			function replaceEmptyItem(arr){
-				for(var i=0,len=arr.length;i<len;i++){
-					if(!arr[i]|| arr[i]==''){
-						arr.splice(i,1);
-						len--;
-					}
-				}
+			
+		$(document).keydown(function(event){
+			//键盘控制
+			var keyCode = event.keyCode; 
+			if(keyCode==179){
+				$("#playBtn").click()
+			}else if(keyCode==177){
+				$("#prevBtn").click()
+			}else if(keyCode==176){
+				$("#nextBtn").click()
 			}
+		
+		});
 		</script>
 	</body>
 	
