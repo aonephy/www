@@ -15,9 +15,10 @@
 		<link rel="Shortcut Icon" href="/ppxb.ico" />
 		<script src="/jquery/jquery-1.11.3.min.js"></script>
 		<script src="js/bootstrap-slider.min.js"></script>
-		<script src="/js/bootstrap.min.js"></script>
+
 		<script src="/js/vue.min.js"></script>
 		<script src="js/axios.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
 		<style>
 			body{background-image:url(images/51206f4be3528.jpg);word-break: break-word}
 			#play{width:100%;height:80px;position:fixed;bottom:0px;}
@@ -32,7 +33,7 @@
 			#play-control .pauseBtn{background-position:0px 0px}
 			#play-control .pauseBtn:hover{background-position:-30px 0px}
 			#nextBtn{left:120px;background-position:-2px -60px}
-			#nextBtn:hover{left:90px;background-position:-30px -60px}
+			#nextBtn:hover{left:120px;background-position:-32px -60px}
 			#ex1Slider .slider-track {background: #BABABA;}
 			#volume .slider-track {background: #BABABA;}
 			.slider-handle{background:#fff;width:15px;height:15px;margin-top;-4px;}
@@ -45,7 +46,7 @@
 			#volume{width:100px;margin-left:30px}
 			#volume-icon{background-image:url(images/icon.png);background-repeat:no-repeat;background-position:0px -296px;display:inline-block;width:20px;height:18px;margin-left:30px;position:relative;top:1px }
 			#playList{margin: auto;width: 700px;color:#fff;overflow:auto}
-			#playListTable{margin-top: 30px;font-size: 1.0em}
+			#playListTable{margin-top: 20px;font-size: 1.0em}
 			.music-item:hover{//color: #888;cursor: pointer;}
 			.music-item:hover .music-title{transform: translate(0px,-2px);display:inline-block;font-weight:800}
 			.music-item:hover #music-index{display:none}
@@ -73,6 +74,12 @@
 				#timeLineStart{left:0px}
 				#timeLineEnd{right:0px}
 			}
+			.libraryList{padding: 10px 0px;width: 70%;margin: auto;border: 1px solid #ccc}
+			#p-body .title li{padding:10px;display:inline-block;text-align: center;width: 49%}
+			#p-body .title a{text-decoration:none;color:#fff;font-weight: 800}
+			#p-body .title .active{border-bottom:3px solid #fff;background: #eee;border-radius: 2px;}
+			#p-body .title .active a{color:#666}
+			#p-body .title{margin: auto;width: 700px;padding: 0px}
 			
 			table tbody {display:block;	overflow-y:auto;}
 			table thead, tbody tr {	display:table;	width:100%;	table-layout:fixed;}
@@ -82,43 +89,65 @@
 		
 	</head>
 	<body>
-		<div id='p-body'>
-			<div id="playList">
-				<table id='playListTable' class="table table-hover-">
-					<thead>
-						<tr>
-							<td>歌曲</td>
-							<td width='80'>演唱者</td>
-							<td width='60'></td>
-						</tr>
-					</thead>
-					<tbody id='tbody'>
-						<tr v-for='rs,index in list' >
-							<td>
-								<div :id="rs.id" class=' music-item' @click='play(index)'>
-									<span id='music-index'>{{index+1}}</span>
-									<span class='glyphicon glyphicon-play-circle'></span>
-									<span class='music-title'>{{rs.title}}</span>
-								</div>
-							</td>
-							<td width='80'>
-								<span>{{rs.author}}</span>
-							</td>
-							<td width='60'>
-								<div class='dropdown'>
-									<span class='glyphicon glyphicon-chevron-down'  data-toggle='dropdown'></span>
-									<ul class='dropdown-menu fright' role='menu' aria-labelledby='myTabDrop1'>
-										<li><a class='addToList' tabindex='-1' data-toggle='tab' @click='ShowAddToListDialog(rs.id)'>加入到歌单</a></li>
-										<li><a  tabindex='-1' data-toggle='tab' @click='showAddLibDialog'>添加新歌单</a></li>
-									</ul>
-								</div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+
+		
+		<div id='p-body' >
+			
+						
+		
+			
+
+			<ul class='title'>
+				<li class='active' ><a href="#musicList" data-toggle="tab">音乐</a></li>
+				<li><a href="#myLibraryList" data-toggle="tab">我的歌单</a></li>
+			</ul>
+				
+			<div id="playList" class="tab-content">
+				
+				
+				<div class="tab-pane" id="myLibraryList" >
+					<div v-for="rs in libraryList" class='libraryList'>
+						{{rs.libName}}
+					</div>
+				</div>
+				
+				<div class="tab-pane active" id="musicList">
+					<table id='playListTable' class="table" >
+						<thead>
+							<tr>
+								<td>歌曲</td>
+								<td width='80'>演唱者</td>
+								<td width='60'></td>
+							</tr>
+						</thead>
+						<tbody id='tbody'>
+							<tr v-for='rs,index in list' >
+								<td>
+									<div :id="rs.id" class=' music-item' @click='play(index)'>
+										<span id='music-index'>{{index+1}}</span>
+										<span class='glyphicon glyphicon-play-circle'></span>
+										<span class='music-title'>{{rs.title}}</span>
+									</div>
+								</td>
+								<td width='80'>
+									<span>{{rs.author}}</span>
+								</td>
+								<td width='60'>
+									<div class='dropdown'>
+										<span class='glyphicon glyphicon-chevron-down'  data-toggle='dropdown'></span>
+										<ul class='dropdown-menu fright' role='menu' aria-labelledby='myTabDrop1'>
+											<li><a class='addToList' tabindex='-1' data-toggle='tab' @click='ShowAddToListDialog(rs.id)'>加入到歌单</a></li>
+											<li><a  tabindex='-1' data-toggle='tab' @click='showAddLibDialog'>添加新歌单</a></li>
+										</ul>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
 			</div>
-		
-		
+
 			<!-- 模态框（Modal） -->
 			<div class="modal fade" id="addLibrary" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 			    <div class="modal-dialog">
@@ -167,6 +196,10 @@
 			</div>
 	
 		
+
+
+
+
 		
 		
 		</div>
@@ -214,7 +247,8 @@
 					libraryList:[],
 		            libraryName:null,
 		            libraryId:null,
-		            musicId:null
+		            musicId:null,
+		            isActive:true
 		        },
 		        methods: {
 			        play(resId){
@@ -315,11 +349,11 @@
 					
 				$("#prevBtn").click(function(){
 					if(index==0)
-						index = list.length; 
+						index = vm.list.length; 
 					playMusic(--index);
 				})
 				$("#nextBtn").click(function(){
-					if(index==(list.length-1))
+					if(index==(vm.list.length-1))
 						index = -1;
 					playMusic(++index);
 				})	
