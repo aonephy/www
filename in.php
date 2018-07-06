@@ -8,16 +8,16 @@
 	<head>
 		<title>皮皮侠音乐</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1.0">
 		<link rel="stylesheet" href="/css/bootstrap.min.css">  
 		<link rel="stylesheet" href="css/bootstrap-slider.min.css">  
 		<link rel="Shortcut Icon" href="/ppxb.ico" />
 		<script src="/jquery/jquery-1.11.3.min.js"></script>
 		<script src="js/bootstrap-slider.min.js"></script>
-		<script src="/js/bootstrap.min.js"></script>
+
 		<script src="/js/vue.min.js"></script>
 		<script src="js/axios.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
 		<style>
 			body{background-image:url(images/51206f4be3528.jpg);word-break: break-word}
 			#play{width:100%;height:80px;position:fixed;bottom:0px;}
@@ -32,6 +32,7 @@
 			#play-control .pauseBtn{background-position:0px 0px}
 			#play-control .pauseBtn:hover{background-position:-30px 0px}
 			#nextBtn{left:120px;background-position:-2px -60px}
+
 			#nextBtn:hover{background-position:-32px -60px}
 			#ex1Slider .slider-track {background: #BABABA;}
 			#volume .slider-track {background: #BABABA;}
@@ -45,22 +46,43 @@
 			#volume{width:100px;margin-left:30px}
 			#volume-icon{background-image:url(images/icon.png);background-repeat:no-repeat;background-position:0px -296px;display:inline-block;width:20px;height:18px;margin-left:30px;position:relative;top:1px }
 			#playList{margin: auto;width: 700px;color:#fff;overflow:auto}
-			#playListTable{margin-top: 30px;font-size: 1.0em}
+			#playListTable{margin-top: 20px;font-size: 1.0em}
 			.music-item:hover{//color: #888;cursor: pointer;}
 			.music-item:hover .music-title{transform: translate(0px,-2px);display:inline-block;font-weight:800}
-			.music-item:hover #music-index{display:none}
+			.music-item:hover .music-index{display:none}
 			.music-item:hover .glyphicon-play-circle{display:inline-block}
 			.music-option{background-image:url(images/icon.png);background-repeat:no-repeat;background-position:0px -296px;width:20px;height:18px;display:block}
 			#playListTable thead{font-weight:800}
-			#music-index{margin: 0px 10px;}
+			.music-index{margin: 0px 10px;}
 			.glyphicon-chevron-down:hover{color:#ddd}
 			.glyphicon-play-circle{margin: 0px 12px 0px 6px;display:none}
 			#play-background{background:#666666;opacity: 0.6;height:100%}
 			.open>.dropdown-menu{right:-8px;border:1px solid #eee;min-width:80px;left:unset}
 			#libraryList .form-group{margin: 5px;display: inline-block}
+			.myLibraryList-box{margin: auto;/border: 1px solid #ccc;float:left;vertical-align: top;}
+			#myLibraryListMenu{width: 25%;margin-right:10px}
+			#myLibraryListMusic{width: 70%;overflow-y:auto;}
+			.libraryListMenu-item{padding:10px}
+			#musicList{padding:10px}
+			.music-author{color:#eee;padding-left:32px;}
+			.libraryListMusic-item dl{//border-bottom:1px solid #eee;margin-bottom:10px}
+			.libraryListMusic-item hr{width:100%;margin:0px}
+			.myLibraryList-box {padding-top:10px}
+			.myLibraryList-box .active{background:#fff;color:#222}
+			
+			#p-body .title li{padding:10px;display:table-cell;text-align: center;width: 50%;float:left}
+			#p-body .title{height:40px}
+			#p-body .title a{text-decoration:none;color:#fff;font-weight: 800}
+			#p-body .title {border-bottom:2px solid #fff;}
+			#p-body .title .active{background: #fff;border-top-left-radius: 2px;border-top-right-radius: 2px;}
+			#p-body .title .active a{color:#666}
+			#p-body .title{margin: auto;width: 700px;padding: 0px}
+			
+			
 			@media handle,only screen and (max-width:450px){
 				#play{height:110px;}
-				#playList{width: 100%;padding: 10px;}#playListTable{margin:0px}
+				#playList{width: 100%;}#playListTable{margin:0px}
+				#p-body .title{width: 100%;//padding-top:10px}
 				#play-control a{top:10px;position: unset;margin: auto;}
 				#play-control div{width:33.33%;position:relative;top:10px}
 				#play-info{top:40px;left:unset}
@@ -74,51 +96,84 @@
 				#timeLineEnd{right:0px}
 			}
 			
+			
 			table tbody {display:block;	overflow-y:auto;}
 			table thead, tbody tr {	display:table;	width:100%;	table-layout:fixed;}
 			table thead {//	width: calc( 100% - 1em )}
 			table thead th{ background:#ccc;}
+			.table>tbody>tr>td{padding:8px 0px}
 		</style>
 		
 	</head>
 	<body>
-		<div id='p-body'>
-			<div id="playList">
-				<table id='playListTable' class="table table-hover-">
-					<thead>
-						<tr>
-							<td>歌曲</td>
-							<td width='80'>演唱者</td>
-							<td width='40'></td>
-						</tr>
-					</thead>
-					<tbody id='tbody'>
-						<tr v-for='rs,index in list' >
-							<td>
-								<div :id="rs.id" class=' music-item' @click='play(index)'>
-									<span id='music-index'>{{index+1}}</span>
+		
+		<div id='p-body' >
+			<ul class='title'>
+				<li class='active' @click="getMusic"><a href="#musicList" data-toggle="tab">所有音乐</a></li>
+				<li @click="resetLibrarySelected"><a href="#myLibraryList" data-toggle="tab">我的歌单</a></li>
+			</ul>
+				
+			<div id="playList" class="tab-content">
+				
+				
+				<div class="tab-pane" id="myLibraryList" >
+					<div id='myLibraryListMenu' class="myLibraryList-box">
+						<div v-for="rs,index in libraryList" class='libraryListMenu-item' v-bind:class="{active:index==ins}" @click="getLibraryListMusic(rs.libId);active(index)" >
+							{{rs.libName}}
+						</div>
+					</div>
+					<div id='myLibraryListMusic' class="myLibraryList-box">
+							<div v-for="rs,index in libraryMusicList" class='libraryListMusic-item music-item' @click="play(index)">
+								<dl>
+									<span class="music-index">{{index+1}}</span>
 									<span class='glyphicon glyphicon-play-circle'></span>
 									<span class='music-title'>{{rs.title}}</span>
-								</div>
-							</td>
-							<td width='80'>
-								<span>{{rs.author}}</span>
-							</td>
-							<td width='40'>
-								<div class='dropdown'>
-									<span class='glyphicon glyphicon-chevron-down'  data-toggle='dropdown'></span>
-									<ul class='dropdown-menu fright' role='menu' aria-labelledby='myTabDrop1'>
-										<li><a class='addToList' tabindex='-1' data-toggle='tab' @click='ShowAddToListDialog(rs.id)'>加入到歌单</a></li>
-										<li><a  tabindex='-1' data-toggle='tab' @click='showAddLibDialog'>添加新歌单</a></li>
-									</ul>
-								</div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+									<p class='music-author'>{{rs.author}}</p>
+									<hr>
+								</dl>
+							</div>					
+						
+								
+					</div>
+				</div>
+				
+				<div class="tab-pane active" id="musicList">
+					<table id='playListTable' class="table" >
+						<thead>
+							<tr>
+								<td>歌曲</td>
+								<td width='60'>演唱者</td>
+								<td width='30'></td>
+							</tr>
+						</thead>
+						<tbody id='tbody'>
+							<tr v-for='rs,index in viewList' >
+								<td>
+									<div :id="rs.id" class=' music-item' @click='play(index)'>
+										<span class='music-index'>{{index+1}}</span>
+										<span class='glyphicon glyphicon-play-circle'></span>
+										<span class='music-title'>{{rs.title}}</span>
+									</div>
+								</td>
+								<td width='60'>
+									<span>{{rs.author}}</span>
+								</td>
+								<td width='30'>
+									<div class='dropdown'>
+										<span class='glyphicon glyphicon-chevron-down'  data-toggle='dropdown'></span>
+										<ul class='dropdown-menu fright' role='menu' aria-labelledby='myTabDrop1'>
+											<li><a class='addToList' tabindex='-1' data-toggle='tab' @click='ShowAddToListDialog(rs.id)'>加入到歌单</a></li>
+											<li><a  tabindex='-1' data-toggle='tab' @click='showAddLibDialog'>添加新歌单</a></li>
+										</ul>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
 			</div>
-		
-		
+
 			<!-- 模态框（Modal） -->
 			<div class="modal fade" id="addLibrary" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 			    <div class="modal-dialog">
@@ -167,6 +222,10 @@
 			</div>
 	
 		
+
+
+
+
 		
 		
 		</div>
@@ -209,27 +268,47 @@
 		    var vm = new Vue({
 		        el: '#p-body',
 		        data: {
-		            list:[],
+					ins:null,//歌单激活active
+		            playList:[],
+		            viewList:[],
 		            res:null,
 					libraryList:[],
+					libraryMusicList:[],
 		            libraryName:null,
 		            libraryId:null,
-		            musicId:null
+		            musicId:null,
+		            isActive:true
 		        },
 		        methods: {
 			        play(resId){
+						this.playList = this.viewList
+						console.log(resId)
 				        playMusic(resId);
 			        },
 			        ShowAddToListDialog(resId){
-
 				        this.musicId = resId;
 						$("#libraryList").modal('show');
 			        },
 			        addToList(){
-				        console.log(this.libraryId)
-				        console.log(this.musicId)
-				        
-						$("#libraryList").modal('hide');
+						let data = {libId:this.libraryId,musicId:this.musicId};
+						data = FormatData(data)
+						
+						axios({
+							url:'api/addLibraryMusic.php',
+							method: 'post',
+							data:data,
+							responseType: 'json',
+							transformResponse: [function(res){
+							//	console.log(res)
+								if(res.code==10000){
+									$("#libraryList").modal('hide');
+								}else if(res.code==10002){
+									alert(res.msg)
+									alert(res.msg)
+								}
+							}]
+						});
+						
 			        },
 					showAddLibDialog(){
 				        $("#addLibrary").modal('show');
@@ -245,8 +324,10 @@
 					        $("#addLibrary").modal('hide');
 
 							//创建歌单
-				            let param = new FormData(); 
-				            param.append('libraryName',vm.libraryName);
+				            let param = FormatData(
+								{libraryName:vm.libraryName}
+							); 
+				           
 							
 							axios.post('api/addLibrary.php',param)
 							  .then(function (res) {
@@ -264,20 +345,40 @@
 							  .catch(function (error) {
 							    // 网络异常引发的错误
 							});
-				        }        
-				        
-					      
-				       
-			        }
-			        
-		        },     
-				mounted: function(){
+				        }
+			        },
+					getLibraryListMusic(id){
+						let data = {libId:id,};
+						data = FormatData(data)
+						axios({
+							url:'api/getLibraryListMusic.php',
+							method: 'post',
+							data:data,
+							responseType: 'json',
+							transformResponse: [function(res){
+							//	console.log(res)
+								if(res.code==10000){
+									vm.libraryMusicList = res.data
+									vm.viewList = res.data
+									
+								}else if(res.code==10002){
+									alert(res.msg)
+								}	
+							}]
+						
+						});
+					},
+					active(num){
+						this.ins = num
+					},
+					getMusic(){
 						axios.get('api/getMusic.php')
 						  .then(function (res) {
 						  	//赋值
 						  	if(res.data.code==10000){
 						    	// 处理响应
-								vm.list = res.data.data,vm.res = res.data ;
+								vm.viewList = res.data.data,vm.res = res.data ;
+								console.log(vm.viewList)
 					    	}else{
 						    	console.log(res.data)
 					    	}	
@@ -285,6 +386,16 @@
 						  .catch(function (error) {
 						    // 网络异常引发的错误
 						});
+
+					},
+					resetLibrarySelected(){
+						this.ins = null
+						this.libraryMusicList = null
+					}
+			        
+		        },     
+				mounted: function(){
+						this.getMusic();
 						axios.get('api/getLibraryList.php')
 						  .then(function (res) {
 						  	//赋值
@@ -302,9 +413,18 @@
 				}
 			})
 						
+			function FormatData(data){
+				let paramters = new FormData(); 
+				for(var key in data){
+					paramters.append(key,data[key])
+				}
+				return paramters;
+			}
+			
 			
 			$(document).ready(function(){
-				$("#tbody").css('height',(document.documentElement.clientHeight-190))
+				$("#tbody").css('height',(document.documentElement.clientHeight-210))
+				$("#myLibraryListMusic").css('height',(document.documentElement.clientHeight-190))
 				// With JQuery
 				$('#ex1').slider({
 					formatter: function(value) {
@@ -314,12 +434,12 @@
 				//上一曲
 				$("#prevBtn").click(function(){
 					if(index==0)
-						index = vm.list.length; 
+						index = vm.playList.length; 
 					playMusic(--index);
 				})
 				//下一曲
 				$("#nextBtn").click(function(){
-					if(index==(vm.list.length-1))
+					if(index==(vm.playList.length-1))
 						index = -1;
 					playMusic(++index);
 				})	
@@ -379,7 +499,7 @@
 			//	console.log(id)
 				index = id;
 
-				data = vm.list[id];
+				data = vm.playList[id];
 				audio.src = data.audioUrl;
 				audio.play();
 				$("#mp3-name").html(data.title+" —— "+data.author);

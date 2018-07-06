@@ -1,7 +1,7 @@
 <?php
 	header("content-Type: text/html; charset=utf-8");
 	header('Content-type: text/json');
-	include("../../bbs/conn.php");
+	include("../../conf/conn.php");
 	$user=$_SESSION['user'];
 	$user_id=$_SESSION['user_id'];
 	$table = "musicLibraryList";
