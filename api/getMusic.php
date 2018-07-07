@@ -6,7 +6,7 @@
 	$user_id=$_SESSION['user_id'];
 	$table = "music";
 	
-	$qry = mysql_query("select * from $table where (ownerid='$user_id' or share='1') and delstatus='1'");
+	$qry = mysql_query("select id,title,audioUrl,imageUrl,author from $table where (ownerid='$user_id' or share='1') and delstatus='1'");
 	while($rs = mysql_fetch_assoc($qry)){
 		$tmp[] = $rs;
 	}
