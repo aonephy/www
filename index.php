@@ -59,15 +59,17 @@
 			.open>.dropdown-menu{right:0px;border:1px solid #eee;min-width:80px;left:unset}
 			#libraryList .form-group{margin: 5px;display: inline-block}
 			.myLibraryList-box{margin: auto;/border: 1px solid #ccc;float:left;vertical-align: top;}
-			#myLibraryListMenu{width: 25%;margin-right:10px}
-			#myLibraryListMusic{width: 70%;overflow-y:auto;}
-			.libraryListMenu-item{padding:10px}
+			#myLibraryListMenu{width: 25%;margin-right:10px;background:#fff;color:#666;position:relative;height:100%;}
+			#myLibraryListMusic{width: 70%;overflow-y:auto;height:100%}
+			.libraryListMenu-item{padding:10px;border-bottom:1px solid #eee}
+			.libraryListMenu-item:hover{background:#eee}
+			
 			#musicList{padding:10px}
 			.music-author{color:#eee;padding-left:32px;}
 			.libraryListMusic-item dl{//border-bottom:1px solid #eee;margin-bottom:10px}
 			.libraryListMusic-item hr{width:100%;margin:0px}
-			.myLibraryList-box {padding-top:10px}
-			.myLibraryList-box .active{background:#fff;color:#222}
+			#myLibraryList {margin-top:5px;}
+			.myLibraryList-box .active{background:#eee;color:#222;border-left:5px solid #f52908;}
 			
 			#p-body .title li{padding:10px;display:table-cell;text-align: center;width: 50%;float:left}
 			#p-body .title{height:40px}
@@ -96,7 +98,7 @@
 			}
 			
 			
-			table tbody {display:block;	overflow-y:auto;}
+			table tbody {display:block;	overflow-y:auto;padding-bottom: 60px;}
 			table thead, tbody tr {	display:table;	width:100%;	table-layout:fixed;}
 			table thead {//	width: calc( 100% - 1em )}
 			table thead th{ background:#ccc;}
@@ -118,10 +120,18 @@
 				
 				<div class="tab-pane" id="myLibraryList" >
 					<div id='myLibraryListMenu' class="myLibraryList-box">
-						<div v-for="rs,index in libraryList" class='libraryListMenu-item' v-bind:class="{active:index==ins}" @click="getLibraryListMusic(rs.libId);active(index)" >
-							{{rs.libName}}
+						<div style="background:#fff;overflow-y:auto;height:100%;padding-bottom:35px">
+							<div v-for="rs,index in libraryList" class='libraryListMenu-item' v-bind:class="{active:index==ins}" @click="getLibraryListMusic(index);active(index)" >
+								{{rs.libName}}
+							</div>
+						</div>
+						<div class="btn btn-default btn-block" style="position:absolute;bottom:0px;border-radius:0px" @click="showAddLibDialog">
+							<a>
+								<span class="glyphicon glyphicon-plus" ></span>新歌单
+							</a>
 						</div>
 					</div>
+
 					<div id='myLibraryListMusic' class="myLibraryList-box">
 							<div v-for="rs,index in libraryMusicList" class='libraryListMusic-item music-item' @click="play(index)">
 								<dl>
@@ -162,7 +172,7 @@
 									<div class='dropdown'>
 										<span class='glyphicon glyphicon-chevron-down'  data-toggle='dropdown'></span>
 										<ul class='dropdown-menu fright' role='menu' aria-labelledby='myTabDrop1'>
-											<li><a class='addToList' tabindex='-1' data-toggle='tab' @click='ShowAddToListDialog(rs.id)'>加入到歌单</a></li>
+											<li><a class='addToList' tabindex='-1' data-toggle='tab' @click='ShowAddToListDialog(index)'>加入到歌单</a></li>
 											<li><a  tabindex='-1' data-toggle='tab' @click='showAddLibDialog'>添加新歌单</a></li>
 										</ul>
 									</div>
@@ -207,10 +217,9 @@
 			                <h4 class="modal-title" id="myModalLabel">加入到歌单</h4>
 			            </div>
 			            <div class="modal-body">
-				            	<div class="form-group" v-for="rs in libraryList">
-									<input type="radio" :id="rs.libId" :value="rs.libId" v-model="libraryId">
-									<label :for="rs.libId">{{rs.libName}}</label>
-									
+				            	<div class="form-group" v-for="rs,index in libraryList">
+									<input type="radio" :id="rs.libId" :value="index" v-model="libraryIndex">
+									<label :for="rs.libId">{{rs.libName}}</label> 
 								</div>
 			            </div>
 			            <div class="modal-footer">
@@ -272,11 +281,11 @@
 					playList:[],
 					viewList:[],
 					res:null,
-					libraryList:[],
-					libraryMusicList:[],
+					libraryList:[],//加载歌单及其中的音乐
+					libraryMusicList:[],//展示歌单中音乐
 					libraryName:null,
-					libraryId:null,
-					musicId:null,
+					libraryIndex:null,//歌单数组index
+					musicIndex:null,
 					isActive:true
 		        },
 		        methods: {
@@ -286,11 +295,14 @@
 						playMusic(resId);
 			        },
 			        ShowAddToListDialog(resId){
-				        this.musicId = resId;
+					//	console.log(this.libraryList);
+				        this.musicIndex = resId;
 						$("#libraryList").modal('show');
 			        },
 			        addToList(){
-						let data = {libId:this.libraryId,musicId:this.musicId};
+					//	console.log(this.res.data[this.musicIndex].id)
+						
+						let data = {libId:this.libraryList[this.libraryIndex].libId,musicId:this.res.data[this.musicIndex].id};
 						data = FormatData(data)
 						
 						axios({
@@ -302,6 +314,7 @@
 							//	console.log(res)
 								if(res.code==10000){
 									$("#libraryList").modal('hide');
+									vm.libraryList[vm.libraryIndex].musicList.push(vm.res.data[vm.musicIndex ])
 								}else if(res.code==10002){
 									alert(res.msg)
 								}
@@ -310,23 +323,23 @@
 						
 			        },
 					showAddLibDialog(){
+						//弹出添加歌单模态窗
 				        $("#addLibrary").modal('show');
 						$('#addLibrary').on('shown.bs.modal',function(e){
 							$("#libraryName").focus();
 				        })
 			        },
-			        addLibrary(){
+			        addLibrary(){						
 				        if(vm.libraryName == null){
 					        alert("请输入有效的歌单名字！");
 					        $("#libraryName").focus();
 				        }else{
 					        $("#addLibrary").modal('hide');
 
-							//创建歌单
+							//创建歌单数据
 				            let param = FormatData(
 								{libraryName:vm.libraryName}
 							); 
-				           
 							
 							axios.post('api/addLibrary.php',param)
 							  .then(function (res) {
@@ -337,6 +350,7 @@
 								//	vm.list = res.data.data,vm.res = res.data ;
 									vm.libraryList.push(res.data.data)
 									vm.libraryName = null;
+									console.log(vm.libraryList);
 						    	}else{
 							    	alert(res.data.msg)
 						    	}	
@@ -347,27 +361,9 @@
 				        }
 			        },
 					getLibraryListMusic(id){
-						let data = {libId:id,};
-						data = FormatData(data)
-						axios({
-							url:'api/getLibraryListMusic.php',
-							method: 'post',
-							data:data,
-							responseType: 'json',
-							transformResponse: [function(res){
-							//	console.log(res)
-								if(res.code==10000){
-									vm.libraryMusicList = res.data
-									vm.viewList = res.data
-								}else if(res.code==10002){
-									vm.viewList.splice(0,vm.viewList.length)
-									alert(res.msg+'--')
-									
-								}
-								
-							}]
-						
-						});
+						//基于歌单数组index获取歌单的音乐
+						this.libraryMusicList = this.libraryList[id].musicList
+						this.viewList = this.libraryList[id].musicList						
 					},
 					active(num){
 						this.ins = num
@@ -378,8 +374,8 @@
 						  	//赋值
 						  	if(res.data.code==10000){
 						    	// 处理响应
-								vm.viewList = res.data.data,vm.res = res.data ;
-								
+								vm.viewList = res.data.data,
+								vm.res = res.data;
 					    	}else{
 						    	console.log(res.data)
 					    	}	
@@ -403,7 +399,7 @@
 						  	if(res.data.code==10000){
 						    	// 处理响应
 								vm.libraryList = res.data.data;
-
+								
 					    	}else{
 						    	console.log(res.data)
 					    	}	
@@ -411,6 +407,7 @@
 						  .catch(function (error) {
 						    // 网络异常引发的错误
 						});
+						
 				}
 			})
 						
@@ -425,7 +422,8 @@
 			
 			$(document).ready(function(){
 				$("#tbody").css('height',(document.documentElement.clientHeight-210))
-				$("#myLibraryListMusic").css('height',(document.documentElement.clientHeight-190))
+				$("#myLibraryList").css('height',(document.documentElement.clientHeight-190))
+				
 				// With JQuery
 				$('#ex1').slider({
 					formatter: function(value) {

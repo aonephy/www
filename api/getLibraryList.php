@@ -1,15 +1,23 @@
 <?php
 	header("content-Type: text/html; charset=utf-8");
-	header('Content-type: text/json');
+//	header('Content-type: text/json');
 	include("../../conf/conn.php");
 	$user=$_SESSION['user'];
 	$user_id=$_SESSION['user_id'];
 	$table = "musicLibraryList";
 
-	$qry = mysql_query("select libId,libName from $table where ownerid='$user_id' and delstatus='1'");
+	$qryLibrary = mysql_query("select libId,libName from $table where ownerid='$user_id' and delstatus='1'");
 	
 	
-	while($rs = mysql_fetch_assoc($qry)){
+	while($rs = mysql_fetch_assoc($qryLibrary)){
+		
+		$libId = $rs['libId'];
+		$qryMusic = mysql_query("select musicLibrary.libId,musicLibrary.musicId,music.title,music.author,music.audioUrl from musicLibrary inner join music on musicLibrary.musicId = music.id where musicLibrary.libId='$libId' and musicLibrary.delstatus='1'");
+		$rs['musicList']=[];
+		while($libMusic = mysql_fetch_assoc($qryMusic)){
+			
+			array_push($rs['musicList'], $libMusic);
+		}
 		$tmp[] = $rs; 
 	}
 	if(!empty($user)){

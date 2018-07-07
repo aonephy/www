@@ -17,7 +17,8 @@
 			'code'=>'10000',
 			'data'=>array(
 					'libId'=>$libId,
-					'libName'=>$libraryName
+					'libName'=>$libraryName,
+					'musicList'=>array()
 			)
 		);
 	}else{
