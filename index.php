@@ -130,11 +130,7 @@
 								{{rs.libName}}
 							</div>
 						</div>
-<<<<<<< HEAD
 						<div class="btn btn-default btn-block" style="position:absolute;bottom:0px;border-radius:0px;border-width:1px 0px 0px;" @click="showAddLibDialog">
-=======
-						<div class="btn btn-default btn-block" style="position:absolute;bottom:0px;border-radius:0px" @click="showAddLibDialog">
->>>>>>> 240a71d1abc97c69f644ebfc55390112ab69b5ec
 							<a>
 								<span class="glyphicon glyphicon-plus" ></span>新歌单
 							</a>
@@ -429,14 +425,10 @@
 			$(document).ready(function(){
 				$("#tbody").css('height',(document.documentElement.clientHeight-210))
 				$("#myLibraryList").css('height',(document.documentElement.clientHeight-190))
-<<<<<<< HEAD
 				console.log()
 				if($(window).width()>=700){
 					$("#play-info").css("left",$("#play-control").css("width"))
 				}
-=======
-				
->>>>>>> 240a71d1abc97c69f644ebfc55390112ab69b5ec
 				// With JQuery
 				$('#ex1').slider({
 					formatter: function(value) {
