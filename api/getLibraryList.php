@@ -12,10 +12,11 @@
 	while($rs = mysql_fetch_assoc($qryLibrary)){
 		
 		$libId = $rs['libId'];
-		$qryMusic = mysql_query("select musicLibrary.libId,musicLibrary.musicId,music.title,music.author,music.audioUrl from musicLibrary inner join music on musicLibrary.musicId = music.id where musicLibrary.libId='$libId' and musicLibrary.delstatus='1'");
+		$qryMusic = mysql_query("select musicLibrary.libId,musicLibrary.musicId,music.title,music.author,music.audioUrl from musicLibrary inner join music on musicLibrary.musicId = music.id where musicLibrary.libId='$libId' and musicLibrary.delstatus='1' and music.delstatus='1'");
 		$rs['musicList']=[];
 		while($libMusic = mysql_fetch_assoc($qryMusic)){
 			
+			$libMusic['playStatus']=false;
 			array_push($rs['musicList'], $libMusic);
 		}
 		$tmp[] = $rs; 

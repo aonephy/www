@@ -54,6 +54,8 @@
 			.music-item:hover .music-title{display:inline-block;}
 			.music-item:hover .music-index{display:none}
 			.music-item:hover .glyphicon-play-circle{display:inline-block}
+			#myLibraryListMusic:hover .active .glyphicon-play-circle{display:none}
+			#playListTable :hover .active .glyphicon-play-circle{display:none}
 			#playListTable thead{font-weight:800}
 			.music-index{margin: 0px 10px;}
 			.glyphicon-chevron-down:hover{color:#ddd}
@@ -67,12 +69,18 @@
 			.libraryListMenu-item{padding:10px;border-bottom:1px solid #eee}
 			.libraryListMenu-item:hover{background:#eee}
 			
+			
 			#musicList{padding:10px}
 			.music-author{color:#eee;padding-left:32px;}
 			.libraryListMusic-item dl{//border-bottom:1px solid #eee;margin-bottom:10px}
 			.libraryListMusic-item hr{width:100%;margin:0px}
 			#myLibraryList {margin-top:5px;}
-			.myLibraryList-box .active{background:#eee;color:#222;border-left:5px solid #f52908;}
+			#myLibraryListMenu .active{background:#eee;color:#222;border-left:5px solid #f52908;}
+			
+			#playListTable .active .glyphicon-play-wave,#myLibraryListMusic .active .glyphicon-play-wave{background-image:url(images/wave.gif);width:10px;height:10px;margin:0px 6px 0px 8px;}
+			#playListTable .active .music-index,#myLibraryListMusic .active .music-index{display:none}
+			.playLibrary .glyphicon-play-wave{background-image:url(images/wave-dark.gif);width:12px;height:12px;float:right;background-size:cover}
+			
 			
 			#p-body .title li{padding:10px;display:table-cell;text-align: center;width: 50%;float:left}
 			#p-body .title{height:40px}
@@ -116,18 +124,17 @@
 		
 		<div id='p-body' >
 			<ul class='title'>
-				<li class='active' @click="getMusic"><a href="#musicList" data-toggle="tab">所有音乐</a></li>
-				<li @click="resetLibrarySelected"><a href="#myLibraryList" data-toggle="tab">我的歌单</a></li>
+				<li class='active'><a href="#musicList" @click="getMusic" data-toggle="tab">所有音乐</a></li>
+				<li><a href="#myLibraryList" @click="resetLibrarySelected" data-toggle="tab">我的歌单</a></li>
 			</ul>
 				
 			<div id="playList" class="tab-content">
-				
-				
 				<div class="tab-pane" id="myLibraryList" >
 					<div id='myLibraryListMenu' class="myLibraryList-box">
 						<div style="background:#fff;overflow-y:auto;height:100%;padding-bottom:35px">
-							<div v-for="rs,index in libraryList" class='libraryListMenu-item' v-bind:class="{active:index==ins}" @click="getLibraryListMusic(index);active(index)" >
+							<div v-for="rs,index in libraryList" class='libraryListMenu-item' v-bind:class="{active:index==activeLibraryId,playLibrary:index==playLibraryId}" @click="getLibraryListMusic(index);active(index)" >
 								{{rs.libName}}
+								<span class='glyphicon glyphicon-play-wave'></span>
 							</div>
 						</div>
 						<div class="btn btn-default btn-block" style="position:absolute;bottom:0px;border-radius:0px;border-width:1px 0px 0px;" @click="showAddLibDialog">
@@ -138,10 +145,11 @@
 					</div>
 
 					<div id='myLibraryListMusic' class="myLibraryList-box">
-							<div v-for="rs,index in libraryMusicList" class='libraryListMusic-item music-item' @click="play(index)">
+							<div v-for="rs,index in libraryMusicList" class='libraryListMusic-item music-item' v-bind:class="{active:rs.playStatus}" @click="play(index)">
 								<dl>
 									<span class="music-index">{{index+1}}</span>
 									<span class='glyphicon glyphicon-play-circle'></span>
+									<span class='glyphicon glyphicon-play-wave'></span>
 									<span class='music-title'>{{rs.title}}</span>
 									<p class='music-author'>{{rs.author}}</p>
 									<hr>
@@ -164,9 +172,10 @@
 						<tbody id='tbody'>
 							<tr v-for='rs,index in viewList' >
 								<td>
-									<div :id="rs.id" class=' music-item' @click='play(index)'>
+									<div :id="rs.id" class=' music-item' @click='play(index)' v-bind:class="{active:rs.playStatus}">
 										<span class='music-index'>{{index+1}}</span>
 										<span class='glyphicon glyphicon-play-circle'></span>
+									<span class='glyphicon glyphicon-play-wave'></span>
 										<span class='music-title'>{{rs.title}}</span>
 									</div>
 								</td>
@@ -234,8 +243,6 @@
 			        </div><!-- /.modal-content -->
 			    </div><!-- /.modal -->
 			</div>
-	
-		
 		
 		
 		</div>
@@ -279,7 +286,11 @@
 		    var vm = new Vue({
 		        el: '#p-body',
 		        data: {
-					ins:null,//歌单激活active
+					activeLibraryId:null,//歌单激活active
+					playLibraryId:null,
+					playTab:1,
+					viewTab:1,
+					playId:null,
 					playList:[],
 					viewList:[],
 					res:null,
@@ -292,8 +303,11 @@
 		        },
 		        methods: {
 			        play(resId){
+						this.playTab = this.viewTab;
 						this.playList = this.viewList;
-						console.log(resId);
+						this.playLibraryId = this.activeLibraryId;
+						if(this.viewTab==1)
+							vm.playLibraryId = null
 						playMusic(resId);
 			        },
 			        ShowAddToListDialog(resId){
@@ -313,10 +327,11 @@
 							data:data,
 							responseType: 'json',
 							transformResponse: [function(res){
-							//	console.log(res)
+								
 								if(res.code==10000){
 									$("#libraryList").modal('hide');
 									vm.libraryList[vm.libraryIndex].musicList.push(vm.res.data[vm.musicIndex])
+								//	console.log(vm.res)
 								}else if(res.code==10002){
 									alert(res.msg)
 								}
@@ -352,7 +367,7 @@
 								//	vm.list = res.data.data,vm.res = res.data ;
 									vm.libraryList.push(res.data.data)
 									vm.libraryName = null;
-									console.log(vm.libraryList);
+								//	console.log(vm.libraryList);
 						    	}else{
 							    	alert(res.data.msg)
 						    	}	
@@ -362,22 +377,36 @@
 							});
 				        }
 			        },
-					getLibraryListMusic(id){
+					getLibraryListMusic(LibraryId){
 						//基于歌单数组index获取歌单的音乐
-						this.libraryMusicList = this.libraryList[id].musicList
-						this.viewList = this.libraryList[id].musicList						
+						//this.libraryList : 歌单清单
+						
+						this.libraryMusicList = this.libraryList[LibraryId].musicList;//歌单id中的歌曲清单
+						this.viewList = this.libraryList[LibraryId].musicList;
 					},
 					active(num){
-						this.ins = num
+						this.activeLibraryId = num;
+						
+						this.checkPlayStatus()
 					},
 					getMusic(){
+						this.viewTab = 1;
 						axios.get('api/getMusic.php')
 						  .then(function (res) {
 						  	//赋值
 						  	if(res.data.code==10000){
 						    	// 处理响应
-								vm.viewList = res.data.data,
+								let len = res.data.data.length;
+								//每个歌加入播放状态
+								for(let i=0;i<len;i++){
+									res.data.data[i].playStatus = false;
+								}
+							
+								vm.viewList = res.data.data,								
 								vm.res = res.data;
+								vm.checkPlayStatus()
+								
+							//	console.log(vm.libraryList)
 					    	}else{
 						    	console.log(res.data)
 					    	}	
@@ -388,20 +417,48 @@
 
 					},
 					resetLibrarySelected(){
-						this.ins = null
-						this.libraryMusicList = null
+						this.viewTab = 2;
+						this.activeLibraryId = null;
+						this.libraryMusicList = null;
+					},
+					checkPlayStatus(){
+						
+						//清楚主歌单播放状态
+						let len = this.viewList.length;
+						for(let i=0;i<len;i++){
+							this.viewList[i].playStatus = false;
+						}
+						//清楚歌单中歌曲播放状态
+						let Llen = this.libraryList.length
+						for(let i=0;i<Llen;i++){
+							
+							let LMlen = this.libraryList[i].musicList.length
+							for(let j=0;j<LMlen;j++){
+								this.libraryList[i].musicList[j].playStatus = false;
+							}
+						}
+						//为播放的歌曲添加播放状态wave.gif
+						if(this.viewTab==1&&this.playTab==1){
+							this.viewList[this.playId].playStatus = true;
+							
+						}else if(this.viewTab==2&&this.playTab==2){
+							if(this.activeLibraryId==this.playLibraryId){
+								this.libraryMusicList[this.playId].playStatus = true;
+							}
+						}
 					}
 			        
 		        },     
 				mounted: function(){
 						this.getMusic();
+						//获取歌单清单及其歌曲清单
 						axios.get('api/getLibraryList.php')
 						  .then(function (res) {
 						  	//赋值
 						  	if(res.data.code==10000){
 						    	// 处理响应
 								vm.libraryList = res.data.data;
-								
+							//	console.log(res.data)
 					    	}else{
 						    	console.log(res.data)
 					    	}	
@@ -425,7 +482,7 @@
 			$(document).ready(function(){
 				$("#tbody").css('height',(document.documentElement.clientHeight-210))
 				$("#myLibraryList").css('height',(document.documentElement.clientHeight-190))
-				console.log()
+				
 				if($(window).width()>=700){
 					$("#play-info").css("left",$("#play-control").css("width"))
 				}
@@ -500,16 +557,19 @@
 			}
 		
 			function playMusic(id){
-			//	console.log(id)
+				console.log("playId "+id);
+				vm.playId = id;
+				//标记播放的歌在主单还是歌单，1为主单，2为歌单
+			
 				index = id;
-
 				data = vm.playList[id];
 				audio.src = data.audioUrl;
 				audio.play();
 				$("#mp3-name").html(data.title+" —— "+data.author);
-				audio.addEventListener("timeupdate",listen)
-				$("#playBtn").removeClass('pauseBtn')
-
+				audio.addEventListener("timeupdate",listen);
+				$("#playBtn").removeClass('pauseBtn');
+				//刷新播放状态标记
+				vm.checkPlayStatus();
 			}		
 			
 			
