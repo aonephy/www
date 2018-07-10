@@ -65,7 +65,7 @@
 			#libraryList .form-group{margin: 5px;display: inline-block}
 			.myLibraryList-box{margin: auto;/border: 1px solid #ccc;float:left;vertical-align: top;}
 			#myLibraryListMenu{width: 25%;margin-right:10px;background:#fff;color:#666;position:relative;height:100%;}
-			#myLibraryListMusic{width: 70%;overflow-y:auto;height:100%}
+			#myLibraryListMusic{width: 70%;overflow-y:auto;height:100%;margin-top:10px}
 			.libraryListMenu-item{padding:10px;border-bottom:1px solid #eee}
 			.libraryListMenu-item:hover{background:#eee}
 			
@@ -74,7 +74,6 @@
 			.music-author{color:#eee;padding-left:32px;}
 			.libraryListMusic-item dl{//border-bottom:1px solid #eee;margin-bottom:10px}
 			.libraryListMusic-item hr{width:100%;margin:0px}
-			#myLibraryList {margin-top:5px;}
 			#myLibraryListMenu .active{background:#eee;color:#222;border-left:5px solid #f52908;}
 			
 			#playListTable .active .glyphicon-play-wave,#myLibraryListMusic .active .glyphicon-play-wave{background-image:url(images/wave.gif);width:10px;height:10px;margin:0px 6px 0px 8px;}
@@ -84,10 +83,10 @@
 			
 			#p-body .title li{padding:10px;display:table-cell;text-align: center;width: 50%;float:left}
 			#p-body .title{height:40px}
-			#p-body .title a{text-decoration:none;color:#fff;font-weight: 800}
+			#p-body .title a{text-decoration:none;color:#999;font-weight: 800}
 			#p-body .title {border-bottom:2px solid #fff;}
 			#p-body .title .active{background: #fff;border-top-left-radius: 2px;border-top-right-radius: 2px;}
-			#p-body .title .active a{color:#666}
+			
 			#p-body .title{margin: auto;width: 700px;padding: 0px}
 			
 			
@@ -123,7 +122,7 @@
 	<body>
 		
 		<div id='p-body' >
-			<ul class='title'>
+			<ul class='title' style="background:#eee">
 				<li class='active'><a href="#musicList" @click="getMusic" data-toggle="tab">所有音乐</a></li>
 				<li><a href="#myLibraryList" @click="resetLibrarySelected" data-toggle="tab">我的歌单</a></li>
 			</ul>
