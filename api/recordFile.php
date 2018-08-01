@@ -10,7 +10,7 @@
 	
 	if(!empty($user)){
 		
-		$audioUrl = "http://live.zb.huaweils.com/".$_POST['fileName'];
+		$audioUrl = "http://oss.aonephy.top/".$_POST['fileName'];
 
 		mysql_query("insert into $table (title,audioUrl,author,ownerid,ip,datetime) values ('$_POST[musicName]','$audioUrl','$_POST[musicAuthor]','$_POST[ownerId]','$ip',now())") or die(mysql_error());
 		

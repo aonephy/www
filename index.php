@@ -110,7 +110,7 @@
 			}
 			
 			
-			table tbody {display:block;	overflow-y:auto;padding-bottom: 60px;}
+			table tbody {display:block;	overflow-y:auto;}
 			table thead, tbody tr {	display:table;	width:100%;	table-layout:fixed;}
 			table thead {//	width: calc( 100% - 1em )}
 			table thead th{ background:#ccc;}
