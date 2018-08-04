@@ -26,13 +26,16 @@
 			.form-group{display:-webkit-box}
 			.alert{position:absolute;top:10px;right:50px;width:250px;display:none}
 			#content .active{display:block}
-			.pagination{min-width:321px;
+			.pagination{display:-webkit-inline-box;}
+			
+			.sr-only{width:100%;height:20px;left:0px;clip:unset;color:#000}
 		</style>
 		
 		<script src="/jquery/jquery-1.11.3.min.js"></script>
 		<script src="/js/vue.min.js"></script>
 		<script src="/js/bootstrap.min.js"></script>
 		<script src="js/axios.min.js"></script>
+		<script src="/js/fileUploadProgress.js"></script>
 	</head>
 	<body>
 	
@@ -57,8 +60,8 @@
 					
 				</thead>
 				<tbody>
-					<tr v-for='rs,index in list'>
-						<td>{{(d.pageIndex-1)*d.pageSize+index+1}}</td>
+					<tr v-for='rs,index in list' height='37'>
+						<td><span v-if='rs'>{{(d.pageIndex-1)*d.pageSize+index+1}}</span></td>
 						<td class='music-title'>{{rs.title}}</td>
 						<td>{{rs.author}}</td>
 						<td>{{rs.username}}</td>
@@ -69,18 +72,14 @@
 			</table>
 			
 			<div id='nav'>
-				<ul class="pagination pagination-">
+				<ul class="pagination">
 					<li v-on:click="first" v-bind:class="{disabled:CON.pageIndex==1}"><a class="glyphicon glyphicon-step-backward"></a></li>
 					<li v-on:click="prev" v-bind:class="{disabled:CON.pageIndex==1}"><a class="glyphicon glyphicon-chevron-left"></a></li>
-					<li v-for="pager in pagers" v-on:click="go(pager)" v-bind:class="{active:CON.pageIndex==pager}"><a >{{pager}}</a></li>
+					<li v-for="pager in pagers" v-on:click="go(pager)" v-bind:class="{active:CON.pageIndex==pager}"><a>{{pager}}</a></li>
 					<li v-on:click="next" v-bind:class="{disabled:CON.pageIndex==CON.totalPage}"><a class="glyphicon glyphicon-chevron-right"></a></li> 
-					<li v-on:click="last" v-bind:class="{disabled:CON.pageIndex==CON.totalPage}"><a class="glyphicon glyphicon-step-forward"></a></li> 
-					
-				
+					<li v-on:click="last" v-bind:class="{disabled:CON.pageIndex==CON.totalPage}"><a class="glyphicon glyphicon-step-forward"></a></li>
 				</ul>
 			</div>
-			
-			
 			<form id='form' >
 			  <input name="token" type="hidden" value="<?=$upToken?>">
 			  <input name="file" id="file" type="file" @change="getFile($event)" />
@@ -115,10 +114,22 @@
 								  <input type="file" class="form-control" id="musicFile" @change="getFile" accept='audio/*'>
 								</div>
 							</div>
+							
+							<div class="form-group" style='margin-bottom:0px'>
+								<div class="col-sm-2">
+								</div>
+								<div class=" col-sm-10">
+									<div class="progress progress-striped" style='margin-bottom:0px'>
+										<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+											<span class="sr-only"></span>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" @click='closeModal'>关闭</button>
-							<button type="button" class="btn btn-info" @click='uploadFile'>上传</button>
+							<button type="button" id='uploadBtn' class="btn btn-info" v-bind:class='{disabled:!activeIndex}' @click='uploadFile'>上传</button>
 						</div>
 					</div><!-- /.modal-content -->
 				</div><!-- /.modal -->
@@ -153,31 +164,28 @@
 					totalPage:null
 		        },
 		        methods: {
-					initial(){
-
-					},
-		            prev(){
+		            prev:function(){
 				        if(CON.pageIndex > 1)
-				            this.go(CON.pageIndex - 1)
+				            this.go(CON.pageIndex - 1);
 			        },
-			        next(){
+			        next:function(){
 						if(CON.pageIndex < CON.totalPage)
-							this.go(CON.pageIndex + 1)
+							this.go(CON.pageIndex + 1);
 			        },
-			        first(){
+			        first:function(){
 			            if (CON.pageIndex !== 1) {
-			                this.go(1)
+			                this.go(1);
 			            }
 			        },
-			        last(){
+			        last:function(){
 			            if (CON.pageIndex != CON.totalPage) {
-			                this.go(CON.totalPage)
+			                this.go(CON.totalPage);
 			            }
 			        },
-			        go(page) {
+			        go:function(page) {
 						this.clearModal();
 			            CON.pageIndex = page;
-			            this.getData()
+			            this.getData();
 			            let PZ = parseInt(CON.navPZ/2);
 						var cur,arr=[]; 
 						if(CON.pageIndex<=PZ){ 
@@ -189,50 +197,62 @@
 						}
 						
 			        },
-			        add(){
+			        add:function(){
 				        document.getElementById("file").click();
 			        },
-					showModal(){
+					showModal:function(){
 						if(this.activeIndex){
 							$('#myModal').modal('show');
 							document.getElementById('musicName').focus();
+							$('.progress-bar').css('width','0%');
 						}
 					},
-					closeModal(){
+					closeModal:function(){
 						$('#myModal').modal('hide');
 						this.clearModal();
 					},
-					clearModal(){
+					clearModal:function(){
 						this.musicName = '';
 						this.musicAuthor = '';
 						this.musicFile = '';
 						document.getElementById('musicFile').value='';
 					},
-					getInfo(){
-						console.log(this.musicName)
-						console.log(this.musicAuthor)
-						console.log(this.musicFile)
+					getInfo:function(){
+						console.log(this.musicName);
+						console.log(this.musicAuthor);
+						console.log(this.musicFile);
 					},
-			        getFile(event) {
-						console.log(event.target.files);
+			        getFile:function(event) {
+					//	console.log(event.target.files);
 						this.musicFile = event.target.files[0];
+						$('.progress-bar').css('width','0%');
+						$('.sr-only').html('0%');
 					},
-					uploadFile(){
-						if(this.checkValue()){
-							$('#myModal').modal('hide');
+					uploadFile:function(){
+						if(!this.activeIndex) {
+							return
+						}
+						if(this.checkValue()){							
 							this.activeIndex = false;
 							let file = this.musicFile;
 							
 							let param = new FormData(); 
-							param.append('file',file,file.name)
-							param.append('token','<?=$upToken?>')
+							param.append('file',file,file.name);
+							param.append('token','<?=$upToken?>');
 							
 							let config = {
-								headers:{'Content-Type':'multipart/form-data'}
+								headers:{'Content-Type':'multipart/form-data'},
+								onUploadProgress:function(e){
+								//	console.log(e);
+									var progress = parseInt(e.loaded / e.total * 100, 10);
+									$('.progress-bar').css('width',progress + '%');
+									$('.sr-only').html(progress + '%');
+								}
 							};
 							axios.post('http://up-z2.qiniup.com',param,config)
 							.then(function(res){
-								console.log(res.data)
+								console.log(res.data);
+								//清楚进度条
 								
 								let param = new FormData(); 
 								param.append('fileName',res.data.hash);
@@ -243,7 +263,7 @@
 								//上传成功后记录到数据库中
 								axios.post('api/recordFile.php',param)
 								.then(function(res){
-								//	console.log(res.data)
+								//	console.log(res.data);
 									vm.go(1);
 									vm.activeIndex = true;
 								})
@@ -256,18 +276,18 @@
 							})
 						}
 					},
-					checkValue(){
+					checkValue:function(){
 						if(this.musicName==''){
-							alert("歌名不能为空！")
+							alert("歌名不能为空！");
 						}else if(this.musicAuthor==''){
-							alert("歌手不能为空！")
+							alert("歌手不能为空！");
 						}else if(this.musicFile==''){
-							alert("歌曲文件不能为空！")
+							alert("歌曲文件不能为空！");
 						}else{
 							return true;
 						}
 					},
-					getData(){
+					getData:function(){
 						console.log('load music list!')
 						axios.get('api/getMusicList.php?page='+CON.pageIndex+'&pagesize='+CON.pageSize)
 						  .then(function (res) {

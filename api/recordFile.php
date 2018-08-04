@@ -24,7 +24,6 @@
 				'msg'=>'author error.'
 			);
 		}
-	$out = $_POST;
     
 	echo json_encode($out,JSON_UNESCAPED_UNICODE);
 ?>
