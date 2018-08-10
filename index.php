@@ -513,7 +513,7 @@
 					$("#nextBtn").click();
 				})
 				//监听音量拖拽
-				mySlider2.bind('slide',function(res){
+				mySlider2.bind('slideStop',function(res){
 				//	console.log(res.value)
 					audio.volume = res.value/10;
 				
