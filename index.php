@@ -77,6 +77,7 @@
 			#myLibraryListMenu .active{background:#eee;color:#222;border-left:5px solid #f52908;}
 			
 			#playListTable .active .glyphicon-play-wave,#myLibraryListMusic .active .glyphicon-play-wave{background-image:url(images/wave.gif);width:10px;height:10px;margin:0px 6px 0px 8px;}
+			#playListTable .active .glyphicon-play-wave-pause,#myLibraryListMusic .active .glyphicon-play-wave-pause{background-image:url(images/wave-pause.gif);width:10px;height:10px;margin:0px 6px 0px 8px;}
 			#playListTable .active .music-index,#myLibraryListMusic .active .music-index{display:none}
 			.playLibrary .glyphicon-play-wave{background-image:url(images/wave-dark.gif);width:12px;height:12px;float:right;background-size:cover}
 			
@@ -569,6 +570,9 @@
 				$("#playBtn").removeClass('pauseBtn');
 				//刷新播放状态标记
 				vm.checkPlayStatus();
+				$(".glyphicon-play-wave-pause").addClass('glyphicon-play-wave');
+				$(".glyphicon-play-wave").removeClass('glyphicon-play-wave-pause');
+				
 			}		
 			
 			
@@ -576,11 +580,15 @@
 			$("#playBtn").click(function(){
 				if(playFlag == 1){
 					audio.pause()
-					$("#playBtn").addClass('pauseBtn')
+					$("#playBtn").addClass('pauseBtn');
+					$(".glyphicon-play-wave").addClass('glyphicon-play-wave-pause');
+					$(".glyphicon-play-wave-pause").removeClass('glyphicon-play-wave');
 					playFlag = 0;
 				}else{
 					audio.play()
-					$("#playBtn").removeClass('pauseBtn')
+					$("#playBtn").removeClass('pauseBtn');					
+					$(".glyphicon-play-wave-pause").addClass('glyphicon-play-wave');
+					$(".glyphicon-play-wave").removeClass('glyphicon-play-wave-pause');
 					playFlag = 1;
 				}
 			})
