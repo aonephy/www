@@ -22,8 +22,8 @@
 		<style>
 			body{background-image:url(images/51206f4be3528.jpg);word-break: break-word;min-width:800px;}
 			#play{width:100%;height:80px;position:fixed;bottom:0px;}
-			#play-control{width:30%;display:inline-block;position:absolute;top:0px;max-width:300px}
-			#play-info{width:70%;display:inline-block;position: absolute;  left: 30%;  top: 0px;}
+			#play-control{width:300px;display:inline-block;position:absolute;top:0px;max-width:300px}
+			#play-info{//width:70%;display:inline-block;position: absolute; top: 0px;}
 			#play-control a{background-image:url(images/icon.png);background-repeat:no-repeat;border:0px solid red;position:relative;width:30px;height:30px;display:block;top:28px;margin:auto;}
 			#play-control div{display:inline-block;width:33.33%}
 			#prevBtn{//left:60px;background-position:0px -90px}
@@ -39,14 +39,14 @@
 			#volume .slider-track {background: #BABABA;}
 			.slider-handle{background:#fff;width:15px;height:15px;margin-top;-4px;}
 			#jindu{position: absolute;top:35px;width:100%}
-			#ex1Slider{width: 65%;}
+			#ex1Slider{width: 70%;}
 			#mp3-name{color:#fff;padding-top: 10px;}
-			#timeLineStart,#timeLineEnd{color: #fff;display:inline-block;position:relative;top:-1px;}
+			#timeLineStart,#timeLineEnd{color: #fff;display:inline-block;position:relative;top:-1px;width:36px}
 			#timeLineStart{margin-right:20px}
 			#timeLineEnd{margin-left:20px}
-			#volume{width:15%;display:inline-block}
-			#volume-icon{background-image:url(images/icon.png);background-repeat:no-repeat;background-position:0px -296px;display:inline-block;width:20px;height:18px;margin-left:5px;position:relative;top:3px }
-			#volume-control{width:70%;max-width:100px}
+			#volume{width:200px;margin-left:20px;display:inline-block}
+			#volume-icon{background-image:url(images/icon.png);background-repeat:no-repeat;background-position:0px -296px;display:inline-block;width:20px;height:18px;margin:0px 10px;position:relative;top:3px }
+			#volume-control{width:80px;max-width:100px}
 			
 			#playList{margin: auto;width: 700px;color:#fff;overflow:auto}
 			#playListTable{margin-top: 20px;font-size: 1.0em}
@@ -267,8 +267,8 @@
 						<input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="1000" data-slider-step="0.2" data-slider-value="0"/>
 						<div id="timeLineEnd"></div>
 						<div id="volume" >
-							<div id="volume-icon"></div>
-							<input id="volume-control" data-slider-id='volume-control' type="text" data-slider-min="0" data-slider-max="10" data-slider-step="0.1" data-slider-value="5"  />
+							<div id="volume-icon" ></div>
+							<input id="volume-control" data-slider-id='volume-control' type="text" data-slider-min="0" data-slider-max="10" data-slider-step="0.1" data-slider-value="10"  />
 						</div>
 						
 					</div>
@@ -480,6 +480,10 @@
 			
 			
 			$(document).ready(function(){
+				console.log($(window).width());
+				$("#play-info").css('width',window.screen.width-300);
+				
+				var vol;
 				$("#tbody").css('height',(document.documentElement.clientHeight-210))
 				$("#myLibraryList").css('height',(document.documentElement.clientHeight-190))
 				
@@ -517,6 +521,7 @@
 				mySlider2.bind('slideStop',function(res){
 				//	console.log(res.value)
 					audio.volume = res.value/10;
+					$("#volume-icon").css("background-position-y","-296px");
 				
 				})
 				//监听播放停止拖拽
@@ -536,6 +541,25 @@
 					$("#timeLineStart").html(FormatTime(audio.currentTime));
 				})
 				
+				$("#volume-icon").on('click',function(){
+					console.log('vol : ',vol);
+					console.log('audio.volume : ',mySlider2.slider('getValue'));
+					if(mySlider2.slider('getValue')==0){
+						audio.volume = (vol/10).toFixed(1);
+						mySlider2.slider('setValue', vol);
+						
+						$(this).css("background-position-y","-296px");
+					}else{
+						vol = mySlider2.slider('getValue');
+						audio.volume = 0;
+						mySlider2.slider('setValue', 0);
+						
+						$(this).css("background-position-y","-313px");
+					}
+					
+					
+					
+				})
 			})
 			
 	
