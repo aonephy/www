@@ -480,7 +480,7 @@
 			
 			
 			$(document).ready(function(){
-				console.log($(window).width());
+				
 				$("#play-info").css('width',window.screen.width-300);
 				
 				var vol;
@@ -588,6 +588,7 @@
 				index = id;
 				data = vm.playList[id];
 				audio.src = data.audioUrl;
+				
 				audio.play();
 				$("#mp3-name").html(data.title+" —— "+data.author);
 				audio.addEventListener("timeupdate",listen);
@@ -602,6 +603,11 @@
 			
 			var playFlag = 1;
 			$("#playBtn").click(function(){
+				
+				if(vm.playId==null){
+					playFlag = 0;
+					vm.play(0);
+				}
 				if(playFlag == 1){
 					audio.pause()
 					$("#playBtn").addClass('pauseBtn');
