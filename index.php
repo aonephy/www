@@ -45,7 +45,7 @@
 			#timeLineStart{margin-right:20px}
 			#timeLineEnd{margin-left:20px}
 			#volume{width:200px;margin-left:20px;display:inline-block}
-			#volume-icon{background-image:url(images/icon.png);background-repeat:no-repeat;background-position:0px -296px;display:inline-block;width:20px;height:18px;margin:0px 10px;position:relative;top:3px }
+			#volume-icon{background-image:url(images/icon.png);background-repeat:no-repeat;background-position:0px -295px;display:inline-block;width:20px;height:18px;margin:0px 10px;position:relative;top:3px }
 			#volume-control{width:80px;max-width:100px}
 			
 			#playList{margin: auto;width: 700px;color:#fff;overflow:auto}
@@ -521,7 +521,7 @@
 				mySlider2.bind('slideStop',function(res){
 				//	console.log(res.value)
 					audio.volume = res.value/10;
-					$("#volume-icon").css("background-position-y","-296px");
+					$("#volume-icon").css("background-position-y","-295px");
 				
 				})
 				//监听播放停止拖拽
@@ -548,7 +548,7 @@
 						audio.volume = (vol/10).toFixed(1);
 						mySlider2.slider('setValue', vol);
 						
-						$(this).css("background-position-y","-296px");
+						$(this).css("background-position-y","-295px");
 					}else{
 						vol = mySlider2.slider('getValue');
 						audio.volume = 0;
