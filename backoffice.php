@@ -2,8 +2,12 @@
 	include("../conf/conn.php");
 
 	$user=$_SESSION['user'];
+	
+	
+	$query="select username,admin from user where userid='$user'";
+	$result=mysql_query($query);
+	$u=mysql_fetch_array($result);
 	if(!empty($user)){
-		$upToken = file_get_contents('http://aonephy.top/api/Qiniu/getToken.php');
 		$ownerId = mysql_fetch_array(mysql_query("select id from user where userid='$user'"))[0];
 ?>
 <!DOCTYPE html>
@@ -13,6 +17,8 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1.0">
+		
+		<link rel="stylesheet" type="text/css" media="screen and (min-device-width: 750px)" href="/css/css.css" />
 		<link rel="stylesheet" href="/css/bootstrap.min.css">  
 		<link rel="stylesheet" href="css/bootstrap-slider.min.css">
 		<link rel="Shortcut Icon" href="/ppxb.ico" />
@@ -20,7 +26,7 @@
 			#content{width: 800px;margin: 50px auto;}
 			#music-list{text-align: center;border: 1px solid #eee}
 			.music-title{text-align: left}
-			#nav{margin: auto;text-align: center}
+			#page-nav{margin: auto;text-align: center}
 			#form{display: none}
 			.glyphicon{top:0px}
 			.form-group{display:-webkit-box}
@@ -38,7 +44,18 @@
 		<script src="/js/fileUploadProgress.js"></script>
 	</head>
 	<body>
-	
+		<div class="header">
+			<ul style='float:left;'>
+			<?php
+			
+			if(isset($user)){
+				echo "用户<b style='color:blue;'> $u[0] </b>已经登陆！";
+				echo "<b><a href='../bbs/logout.php'>注销</font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='../'>返回</a></b>";
+			}		
+			?> 
+			</ul>
+
+		</div>
 		<div id="content">
 			<div class="alert alert-warning" v-bind:class='{active:!activeIndex}'>歌曲上传中！</div>
 			<div class='btn btn-info' v-bind:class='{disabled:!activeIndex}' @click='showModal'>
@@ -71,7 +88,7 @@
 				</tbody>
 			</table>
 			
-			<div id='nav'>
+			<div id='page-nav'>
 				<ul class="pagination">
 					<li v-on:click="first" v-bind:class="{disabled:CON.pageIndex==1}"><a class="glyphicon glyphicon-step-backward"></a></li>
 					<li v-on:click="prev" v-bind:class="{disabled:CON.pageIndex==1}"><a class="glyphicon glyphicon-chevron-left"></a></li>
