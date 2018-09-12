@@ -480,9 +480,9 @@
 			
 			
 			$(document).ready(function(){
-				
-				$("#play-info").css('width',window.screen.width-300);
-				
+				if(window.screen.width>450){
+					$("#play-info").css('width',window.screen.width-300);
+				}
 				var vol;
 				$("#tbody").css('height',(document.documentElement.clientHeight-210))
 				$("#myLibraryList").css('height',(document.documentElement.clientHeight-190))
