@@ -8,6 +8,7 @@
 	$result=mysql_query($query);
 	$u=mysql_fetch_array($result);
 	if(!empty($user)){
+		$upToken = file_get_contents('http://aonephy.top/api/Qiniu/getToken.php');
 		$ownerId = mysql_fetch_array(mysql_query("select id from user where userid='$user'"))[0];
 ?>
 <!DOCTYPE html>
